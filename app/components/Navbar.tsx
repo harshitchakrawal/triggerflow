@@ -41,13 +41,13 @@ const Navbar = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="#"
+              href="/dashboard"
               className="px-4 py-2 text-sm font-medium text-[#3d3d3d] hover:text-[#1a1a1a] transition-colors"
             >
               Log In
             </Link>
             <Link
-              href="#"
+              href="/dashboard"
               className="px-5 py-2.5 text-sm font-semibold text-white rounded-full bg-[#1a1a1a] hover:bg-[#333] active:scale-95 transition-all shadow-sm"
             >
               Try free demo
@@ -82,7 +82,7 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="mt-2 pt-2 border-t border-black/[0.06]">
-              <Link href="#" className="block w-full text-center px-4 py-2.5 text-sm font-semibold text-white rounded-xl bg-[#f05a28]">
+              <Link href="/dashboard" className="block w-full text-center px-4 py-2.5 text-sm font-semibold text-white rounded-xl bg-[#f05a28]">
                 Try free demo
               </Link>
             </div>

@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   const VERIFY_TOKEN = "triggerflow123";
 
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    return new Response(challenge, { status: 200 });
+    return new Response(challenge ?? "", { status: 200 });
   }
 
   return new Response("Verification failed", { status: 403 });
@@ -21,8 +21,8 @@ export async function GET(req: Request) {
 // POST request (for receiving data)
 export async function POST(req: Request) {
   const body = await req.json();
-  
-  console.log("Webhook received:", body);
 
-  return NextResponse.json({ success: true });
+  console.log("🔥 Webhook received:", JSON.stringify(body, null, 2));
+
+  return new Response("EVENT_RECEIVED", { status: 200 });
 }

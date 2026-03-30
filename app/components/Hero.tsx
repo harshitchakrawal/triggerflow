@@ -16,31 +16,29 @@ export default function Hero() {
   const [showDm, setShowDm] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const startCycle = () => {
-    let count = 0;
-    const tick = () => {
-      count++;
-      setVisibleCount(count);
-      if (count < COMMENTS.length) {
-        timerRef.current = setTimeout(tick, 800);
-      } else {
-        timerRef.current = setTimeout(() => {
-          setShowDm(true);
-          timerRef.current = setTimeout(() => {
-            setVisibleCount(0);
-            setShowDm(false);
-            timerRef.current = setTimeout(startCycle, 600);
-          }, 3000);
-        }, 400);
-      }
-    };
-    timerRef.current = setTimeout(tick, 800);
-  };
+  // const startCycle = () => {
+  //   let count = 0;
+  //   const tick = () => {
+  //     count++;
+  //     setVisibleCount(count);
+  //     if (count < COMMENTS.length) {
+  //       timerRef.current = setTimeout(tick, 800);
+  //     } else {
+  //       timerRef.current = setTimeout(() => {
+  //         setShowDm(true);
+  //         timerRef.current = setTimeout(() => {
+  //           setVisibleCount(0);
+  //           setShowDm(false);
+  //           timerRef.current = setTimeout(startCycle, 600);
+  //         }, 3000);
+  //       }, 400);
+  //     }
+  //   };
+  //   timerRef.current = setTimeout(tick, 800);
+  // };
 
   useEffect(() => {
-    startCycle();
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -96,7 +94,7 @@ export default function Hero() {
         {/* CTAs */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <a
-            href="#"
+            href="/dashboard"
             className="flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 active:translate-y-0"
             style={{ background: "#f05a28", boxShadow: "0 4px 20px rgba(240,90,40,0.35)" }}
           >
@@ -137,7 +135,7 @@ export default function Hero() {
       {/* ═══════════════════ FLOATING CARDS ═══════════════════ */}
 
       {/* Left card — comment feed */}
-      <div className="absolute left-[2%] xl:left-[5%] top-1/2 -translate-y-1/2 w-[220px] hidden lg:block">
+      {/* <div className="absolute left-[2%] xl:left-[5%] top-1/2 -translate-y-1/2 w-[220px] hidden lg:block">
         <div className="bg-white/90 backdrop-blur-md border border-black/[0.07] rounded-2xl shadow-xl p-4">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#aaa] mb-3">Live Comments</p>
           <div className="flex flex-col gap-2.5 min-h-[120px]">
@@ -177,7 +175,7 @@ export default function Hero() {
             </div>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* Top-right floating pill — "Send roadmap" */}
       <div
@@ -203,7 +201,7 @@ export default function Hero() {
       </div>
 
       {/* Right card — stats */}
-      <div className="absolute right-[2%] xl:right-[5%] top-1/2 -translate-y-1/2 w-[200px] hidden lg:block">
+      {/* <div className="absolute right-[2%] xl:right-[5%] top-1/2 -translate-y-1/2 w-[200px] hidden lg:block">
         <div className="bg-white/90 backdrop-blur-md border border-black/[0.07] rounded-2xl shadow-xl p-4 flex flex-col gap-3">
           {[
             { icon: "⚡", label: "DMs Sent", value: "10M+", sub: "Auto-triggered" },
@@ -221,7 +219,7 @@ export default function Hero() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <style>{`
         @keyframes slideUp {

@@ -6,8 +6,7 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN!;
 
 // Your automation rules — later move this to a database
 const RULES: Record<string, { keyword: string; message: string }> = {
-  // "instagram_media_id": { keyword: "link", message: "Here's your link: ..." }
-  "YOUR_REEL_MEDIA_ID": {
+  "18105104897508153": {
     keyword: "link",
     message: "Hey! Here's the resource you asked for: https://yourlink.com",
   },
@@ -85,6 +84,8 @@ async function sendDM(userId: string, message: string): Promise<boolean> {
       {
         recipient: { id: userId },
         message: { text: message },
+        messaging_type: "MESSAGE_TAG",
+        tag: "HUMAN_AGENT",
       },
       {
         params: { access_token: PAGE_ACCESS_TOKEN },
@@ -95,4 +96,5 @@ async function sendDM(userId: string, message: string): Promise<boolean> {
     console.error("❌ DM failed:", err.response?.data ?? err.message);
     return false;
   }
+
 }

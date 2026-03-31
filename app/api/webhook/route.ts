@@ -1,75 +1,73 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { connectDB } from "@/lib/mongodb";
+import { AutomationRule } from "@/models/AutomationRule";
+import { ProcessedComment } from "@/models/ProcessedComment";
 
 const VERIFY_TOKEN = "triggerflow123";
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN!;
+const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN!;
 
-// Your automation rules — later move this to a database
-const RULES: Record<string, { keyword: string; message: string }> = {
-  "18105104897508153": {
-    keyword: "link",
-    message: "Hey! Here's the resource you asked for: https://yourlink.com",
-  },
-};
-
-// Track who already got a DM — replace with DB later
-const dmSentLog = new Set<string>();
-
-// GET — webhook verification
+// GET — webhook verification (unchanged)
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-
-  const mode = searchParams.get("hub.mode");
-  const token = searchParams.get("hub.verify_token");
+  const mode      = searchParams.get("hub.mode");
+  const token     = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
     return new Response(challenge ?? "", { status: 200 });
   }
-
   return new Response("Verification failed", { status: 403 });
 }
 
 // POST — receive and process webhook events
 export async function POST(req: Request) {
   const body = await req.json();
-
   console.log("🔥 Webhook received:", JSON.stringify(body, null, 2));
 
-  // Always respond 200 immediately — Meta will retry if you don't
   if (body.object !== "instagram") {
     return new Response("EVENT_RECEIVED", { status: 200 });
   }
+
+  await connectDB();
 
   for (const entry of body.entry ?? []) {
     for (const change of entry.changes ?? []) {
       if (change.field !== "comments") continue;
 
-      const comment = change.value;
-      const mediaId: string = comment.media?.id;
-      const commentText: string = comment.text?.toLowerCase().trim();
-      const commenterId: string = comment.from?.id;
+      const comment     = change.value;
+      const mediaId     = comment.media?.id;
+      const commentText = comment.text?.toLowerCase().trim();
+      const commenterId = comment.from?.id;
+      const commentId   = comment.id;
 
       if (!mediaId || !commentText || !commenterId) continue;
 
-      const rule = RULES[mediaId];
-      if (!rule) continue;
+      // Find matching rule from MongoDB
+      const rule = await AutomationRule.findOne({
+        mediaId,
+        isActive: true,
+        keyword: { $regex: new RegExp(commentText, "i") }
+      });
 
-      // Check if comment contains the trigger keyword
-      if (!commentText.includes(rule.keyword.toLowerCase())) continue;
-
-      // Deduplicate — don't DM same person twice for same reel
-      const dedupKey = `${commenterId}:${mediaId}`;
-      if (dmSentLog.has(dedupKey)) {
-        console.log("⏭️ Already DMed this user for this reel, skipping");
+      if (!rule) {
+        console.log("⏭️ No matching rule for this reel/keyword");
         continue;
       }
 
-      // Send the DM
+      // Check duplicate
+      const dedupKey = `${commenterId}:${mediaId}`;
+      const already = await ProcessedComment.findOne({ dedupKey });
+      if (already) {
+        console.log("⏭️ Already DMed this user, skipping");
+        continue;
+      }
+
+      // Send DM
       const success = await sendDM(commenterId, rule.message);
       if (success) {
-        dmSentLog.add(dedupKey);
-        console.log(`✅ DM sent to ${commenterId} for reel ${mediaId}`);
+        await ProcessedComment.create({ dedupKey, ruleId: rule._id });
+        console.log(`✅ DM sent to ${commenterId}`);
       }
     }
   }
@@ -80,15 +78,14 @@ export async function POST(req: Request) {
 async function sendDM(userId: string, message: string): Promise<boolean> {
   try {
     await axios.post(
-      "https://graph.facebook.com/v19.0/me/messages",
+      "https://graph.instagram.com/v21.0/me/messages",
       {
         recipient: { id: userId },
         message: { text: message },
-        messaging_type: "MESSAGE_TAG",
-        tag: "HUMAN_AGENT",
+        messaging_type: "RESPONSE",
       },
       {
-        params: { access_token: PAGE_ACCESS_TOKEN },
+        params: { access_token: INSTAGRAM_ACCESS_TOKEN },
       }
     );
     return true;
@@ -96,5 +93,4 @@ async function sendDM(userId: string, message: string): Promise<boolean> {
     console.error("❌ DM failed:", err.response?.data ?? err.message);
     return false;
   }
-
 }

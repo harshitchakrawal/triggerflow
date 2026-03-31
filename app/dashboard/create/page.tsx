@@ -1,17 +1,19 @@
-﻿"use client";
+"use client";
 import React, { useState } from "react";
 import Link from "next/link";
 
 export default function CreateAutomation() {
   const [reelUrl, setReelUrl] = useState("");
-  const [keywords, setKeywords] = useState(["link", "roadmap"]);
+  const [keywords, setKeywords] = useState<string[]>(["link"]);
+  const [newKeyword, setNewKeyword] = useState("");
   const [commentMsg, setCommentMsg] = useState(
     "Hey! I just sent you the link in DMs — check your inbox!"
   );
   const [dmMsg, setDmMsg] = useState(
-    "Hey! Here's the resource you asked for: https://yourlink.com"
+    "Here's the resource you asked for: https://yourlink.com"
   );
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const extractMediaId = (url: string) => {
     const match = url.match(/reel\/([A-Za-z0-9_-]+)/);
@@ -21,196 +23,234 @@ export default function CreateAutomation() {
   const mediaId = extractMediaId(reelUrl);
 
   const handleSave = async () => {
-    if (!mediaId) return alert("Invalid reel URL");
+    if (!mediaId) {
+      alert("Please enter a valid Instagram reel URL");
+      return;
+    }
+    if (keywords.length === 0) {
+      alert("Please add at least one keyword");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const res = await fetch("/api/rules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          mediaId, 
+          keyword: keywords.join(","), 
+          commentMsg, 
+          dmMsg 
+        }),
+      });
 
-    const res = await fetch("/api/rules", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        mediaId, 
-        keyword: keywords.join(","), 
-        commentMsg, 
-        dmMsg 
-      }),
-    });
-
-    if (res.ok) {
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        alert("Failed to save automation. Please try again.");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("An error occurred while saving.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const addKeyword = () => setKeywords([...keywords, ""]);
-  
-  const updateKeyword = (index: number, val: string) => {
-    const newKw = [...keywords];
-    newKw[index] = val;
-    setKeywords(newKw);
-  };
-  
-  const removeKeyword = (index: number) => {
-    if (keywords.length > 1) {
-       setKeywords(keywords.filter((_, i) => i !== index));
-    } else {
-       setKeywords([""]);
+  const addKeyword = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && newKeyword.trim()) {
+      e.preventDefault();
+      const kw = newKeyword.trim().toLowerCase();
+      if (!keywords.includes(kw)) {
+        setKeywords([...keywords, kw]);
+      }
+      setNewKeyword("");
     }
+  };
+
+  const removeKeyword = (kw: string) => {
+    setKeywords(keywords.filter((k) => k !== kw));
   };
 
   return (
-    <div className="relative pb-24 px-4 sm:px-8 w-full text-white font-sans max-w-5xl mx-auto pt-12">
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-8 group">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m15 18-6-6 6-6" />
-        </svg>
-        <span className="text-sm font-bold">Back to automations</span>
-      </Link>
-      <div className="flex flex-col mb-12">
-        <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-[#3dfc9d]/10 border border-[#3dfc9d]/20 text-[10px] font-black uppercase tracking-widest text-[#3dfc9d]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#3dfc9d] animate-pulse" />
-          Automation Builder
+    <section
+      className="dot-grid relative min-h-screen overflow-hidden px-4 py-10 sm:px-6 lg:px-8"
+      style={{
+        background: "radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255,255,255,0.7) 0%, transparent 100%), linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%)"
+      }}
+    >
+      <div className="relative z-10 mx-auto w-full max-w-4xl pt-8">
+        {/* Navigation */}
+        <Link 
+          href="/dashboard" 
+          className="inline-flex items-center gap-2 text-[#aaa] hover:text-[#f05a28] transition-all mb-8 group"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          <span className="text-[10px] font-black uppercase tracking-widest">Back to Dashboard</span>
+        </Link>
+        
+        {/* Title Section */}
+        <div className="mb-12">
+          <h1 className="text-3xl font-black text-[#1a1a1a] tracking-tight mb-4">Create automation</h1>
+          <div className="h-1.5 w-48 bg-[#f05a28] rounded-full shadow-[0_4px_15px_rgba(240,90,40,0.3)]" />
         </div>
-        <h1 className="text-4xl font-black tracking-tight text-white mb-2">
-          Create new <span className="text-[#3dfc9d]">automation</span>
-        </h1>
-        <p className="text-white/40 text-sm font-medium">Configure your Instagram reel to auto-reply to comments.</p>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-7 space-y-12">
-          <section>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-white/40">1</div>
-              <h2 className="text-xl font-black text-white">Reel Details</h2>
+
+        <div className="space-y-16 pb-20">
+          {/* Section 1: Reel Details */}
+          <section className="space-y-6">
+            <div className="px-1">
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Reel details</h2>
+              <p className="text-[#aaa] text-xs font-bold uppercase tracking-widest">
+                Paste your Instagram reel link — we extract the media ID automatically
+              </p>
             </div>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-white/30 px-1">Reel URL</label>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white/80 border border-black/[0.07] rounded-2xl p-6 backdrop-blur-md shadow-sm space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">Reel URL</label>
                 <input 
-                  className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl px-5 py-4 text-sm font-medium text-white placeholder:text-white/20 focus:outline-none focus:border-[#3dfc9d]/40 transition-all shadow-xl"
+                  className="w-full bg-transparent border-b border-black/[0.05] pb-2 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28] transition-all placeholder:text-[#ccc]"
                   value={reelUrl}
                   onChange={(e) => setReelUrl(e.target.value)}
-                  placeholder="https://www.instagram.com/reel/..."
+                  placeholder="https://www.instagram.com/reel/ABC123..."
                 />
-                <p className="text-[10px] text-white/20 font-medium px-1">Link your Instagram reel to start tracking comments.</p>
               </div>
-              <div className="opacity-50">
-                <label className="text-xs font-black uppercase tracking-widest text-white/30 px-1">Media ID</label>
-                <div className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm font-bold text-white/40 cursor-not-allowed">
-                  {mediaId || "Auto-detected"}
+
+              <div className="bg-white/80 border border-black/[0.07] rounded-2xl p-6 backdrop-blur-md shadow-sm space-y-3 opacity-90 transition-opacity">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">Media ID</label>
+                <div className="text-sm font-black text-[#1a1a1a]/40 italic truncate">
+                  {mediaId || "Auto-extracted from URL"}
                 </div>
+                <div className="h-[1px] bg-black/[0.05]" />
+                <p className="text-[10px] text-[#aaa] font-medium leading-tight italic">This is what Instagram uses to identify your reel</p>
               </div>
             </div>
           </section>
-          <section>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-white/40">2</div>
-              <h2 className="text-xl font-black text-white">Trigger Keywords</h2>
+
+          {/* Section 2: Trigger Keywords */}
+          <section className="space-y-6">
+            <div className="px-1">
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Trigger keywords</h2>
+              <p className="text-[#aaa] text-xs font-bold uppercase tracking-widest">
+                Anyone who comments these words will receive your automated reply
+              </p>
             </div>
-            <div className="space-y-3 mb-6">
-              {keywords.map((kw, idx) => (
-                <div key={idx} className="flex items-center gap-3 group">
-                  <input 
-                    className="flex-1 bg-[#1a1a1a] border border-white/5 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#3dfc9d]/40 transition-all shadow-xl"
-                    value={kw}
-                    onChange={(e) => updateKeyword(idx, e.target.value)}
-                    placeholder="Keyword (e.g. roadmap)"
-                  />
-                  <button 
-                    onClick={() => removeKeyword(idx)} 
-                    className="w-12 h-12 flex-shrink-0 rounded-2xl bg-white/5 text-white/20 flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-            <button onClick={addKeyword} className="w-full py-4 rounded-2xl border border-dashed border-white/10 text-white/40 text-sm font-bold hover:border-[#3dfc9d]/40 hover:text-white transition-all flex items-center justify-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              Add more keywords
-            </button>
-          </section>
-          <section>
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-white/40">3</div>
-              <h2 className="text-xl font-black text-white">Message Content</h2>
-            </div>
-            <div className="space-y-8">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-white/30 px-1">Comment Reply</label>
-                <textarea className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#3dfc9d]/40 transition-all shadow-xl resize-none" rows={3} value={commentMsg} onChange={(e) => setCommentMsg(e.target.value)} />
+
+            <div className="bg-white/80 border border-black/[0.07] rounded-3xl p-8 backdrop-blur-md shadow-sm max-w-2xl">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa] mb-4 block">Keywords</label>
+              <div className="flex flex-wrap gap-2 items-center">
+                {keywords.map((kw) => (
+                  <span key={kw} className="inline-flex items-center gap-2 bg-[#f05a28]/10 border border-[#f05a28]/20 px-3 py-1.5 rounded-xl text-xs font-black text-[#f05a28] animate-in zoom-in-95">
+                    {kw}
+                    <button onClick={() => removeKeyword(kw)} className="hover:opacity-60 transition-opacity cursor-pointer">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+                <input 
+                  className="bg-transparent border-none outline-none text-sm font-bold text-[#1a1a1a] min-w-[150px] px-2 py-1"
+                  placeholder={keywords.length === 0 ? "Type and press Enter..." : "Add keyword..."}
+                  value={newKeyword}
+                  onChange={(e) => setNewKeyword(e.target.value)}
+                  onKeyDown={addKeyword}
+                />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-white/30 px-1">DM Payload</label>
-                <textarea className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-[#3dfc9d]/40 transition-all shadow-xl resize-none" rows={3} value={dmMsg} onChange={(e) => setDmMsg(e.target.value)} />
-              </div>
+              <div className="h-[1px] bg-black/[0.05] mt-4 mb-3" />
+              <p className="text-[10px] text-[#aaa] font-bold italic opacity-60">
+                Press Enter to add each keyword. Case insensitive.
+              </p>
             </div>
           </section>
-        </div>
-        <div className="lg:col-span-5">
-           <div className="sticky top-12 space-y-8">
-             <div className="bg-[#161616] border border-white/5 rounded-3xl p-8 shadow-2xl">
-                <h3 className="text-xs font-black text-white/30 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                  Real-time Preview
-                </h3>
-                <div className="space-y-4">
-                   <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                      <p className="text-[10px] font-bold text-white/40 mb-2">When someone comments:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {keywords.map((kw, i) => kw && (
-                          <span key={i} className="px-2 py-1 bg-[#3dfc9d]/10 text-[#3dfc9d] text-[10px] font-black rounded-md border border-[#3dfc9d]/20">"{kw}"</span>
-                        ))}
-                      </div>
-                   </div>
-                   <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-white/5 relative overflow-hidden">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#3dfc9d] to-cyan-400 flex items-center justify-center text-[10px] font-black text-[#111] shadow-lg shadow-[#3dfc9d]/20 flex-shrink-0">TF</div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-bold text-white/60 mb-1 leading-none">Triggerflow <span className="text-[8px] opacity-40 font-medium ml-1">now</span></p>
-                          <p className="text-xs font-bold text-white leading-relaxed">{commentMsg}</p>
-                        </div>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-white/5">
-                         <div className="flex items-center gap-2 text-[9px] font-bold text-white/30">
-                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                             <circle cx="12" cy="12" r="10" />
-                             <polyline points="12 6 12 12 16 14" />
-                           </svg>
-                           DM sequence will follow automatically
-                         </div>
-                      </div>
-                   </div>
+
+          {/* Section 3: Reply Messages */}
+          <section className="space-y-6">
+            <div className="px-1">
+              <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Reply messages</h2>
+              <p className="text-[#aaa] text-xs font-bold uppercase tracking-widest">
+                What to send when someone comments a trigger keyword
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-white/80 border border-black/[0.07] rounded-3xl p-8 backdrop-blur-md shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">Comment reply</label>
+                  <span className="text-[9px] font-black text-[#f05a28] px-2 py-1 rounded-full bg-[#f05a28]/10 border border-[#f05a28]/20 uppercase tracking-widest">
+                    always works
+                  </span>
                 </div>
-             </div>
-             <button onClick={handleSave} className="w-full py-5 rounded-2xl bg-white text-[#111] font-black text-lg shadow-2xl shadow-white/5 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group disabled:opacity-50" disabled={saved}>
-              {saved ? (
+                <textarea 
+                  className="w-full bg-black/[0.02] border border-black/[0.05] rounded-xl px-4 py-3 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28]/40 transition-all resize-none min-h-[100px]"
+                  value={commentMsg}
+                  onChange={(e) => setCommentMsg(e.target.value.slice(0, 200))}
+                  placeholder="Enter your comment reply..."
+                />
+                <div className="text-[10px] font-black font-mono text-[#ccc] text-right">
+                  {commentMsg.length} / 200
+                </div>
+              </div>
+
+              <div className="bg-white/80 border border-black/[0.07] rounded-3xl p-8 backdrop-blur-md shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">DM message</label>
+                  <span className="text-[9px] font-black text-[#aaa] px-2 py-1 rounded-full bg-black/[0.05] border border-black/[0.05] uppercase tracking-widest font-mono">
+                    requires approval
+                  </span>
+                </div>
+                <textarea 
+                  className="w-full bg-black/[0.02] border border-black/[0.05] rounded-xl px-4 py-3 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28]/40 transition-all resize-none min-h-[100px]"
+                  value={dmMsg}
+                  onChange={(e) => setDmMsg(e.target.value)}
+                  placeholder="Enter your DM message..."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Action Footer */}
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-black/[0.05]">
+            <div className="flex items-center gap-3 text-[#aaa]">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#f05a28] animate-pulse" />
+              <p className="text-[11px] font-bold tracking-tight">Active immediately after saving.</p>
+            </div>
+            
+            <button 
+              onClick={handleSave}
+              disabled={loading || saved}
+              className="text-white font-black text-sm px-10 py-4 rounded-xl hover:-translate-y-0.5 transition-all active:translate-y-0 shadow-md flex items-center gap-3 disabled:opacity-50 disabled:translate-y-0"
+              style={{ background: "#f05a28", boxShadow: "0 4px 20px rgba(240,90,40,0.4)" }}
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-[2px] border-white/20 border-t-white rounded-full animate-spin" />
+              ) : saved ? (
                 <>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  Automation Saved!
+                  Saved!
                 </>
               ) : (
                 <>
                   Save Automation
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </>
               )}
             </button>
-           </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
+
+

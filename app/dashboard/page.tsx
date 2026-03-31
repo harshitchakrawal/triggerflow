@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -101,7 +101,7 @@ export default function Dashboard() {
             </div>
             <Link
               href="/dashboard/create"
-              className="text-white font-black text-sm px-6 py-3 rounded-full hover:-translate-y-0.5 transition-all active:translate-y-0 shadow-md"
+              className="text-white font-black text-sm px-6 py-3 rounded-xl hover:-translate-y-0.5 transition-all active:translate-y-0 shadow-md"
               style={{ background: "#f05a28", boxShadow: "0 4px 20px rgba(240,90,40,0.35)" }}
             >
               + New automation

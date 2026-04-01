@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TriggerFlow — Turn Comments into DMs, Instantly",
+  title: "TriggerFlow - Turn Comments into DMs, Instantly",
   description:
     "Creators post a keyword, fans comment it, TriggerFlow sends personalized DMs automatically. Built for Instagram, YouTube, Twitter, and more.",
 };

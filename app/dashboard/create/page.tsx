@@ -112,7 +112,7 @@ export default function CreateAutomation() {
             <div className="px-1">
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Reel details</h2>
               <p className="text-[#707070] text-xs font-bold uppercase tracking-widest">
-                Paste your Instagram reel link — we extract the media ID automatically
+                Paste your Instagram reel link - we extract the media ID automatically
               </p>
             </div>
 

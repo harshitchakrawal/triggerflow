@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/app/lib/mongodb";
 import { AutomationRule } from "@/app/models/AutomationRule";
 
 export async function POST(req: Request) {

@@ -137,7 +137,7 @@ export default function Hero() {
       {/* Left card — comment feed */}
       {/* <div className="absolute left-[2%] xl:left-[5%] top-1/2 -translate-y-1/2 w-[220px] hidden lg:block">
         <div className="bg-white/90 backdrop-blur-md border border-black/[0.07] rounded-2xl shadow-xl p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#aaa] mb-3">Live Comments</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#707070] mb-3">Live Comments</p>
           <div className="flex flex-col gap-2.5 min-h-[120px]">
             {COMMENTS.slice(0, visibleCount).map((c, i) => (
               <div
@@ -152,7 +152,7 @@ export default function Hero() {
                   {c.avatar}
                 </div>
                 <div>
-                  <p className="text-[9px] text-[#aaa] leading-none mb-0.5">@{c.name}</p>
+                  <p className="text-[10px] text-[#707070] leading-none mb-0.5">@{c.name}</p>
                   <p className="text-xs font-bold text-[#1a1a1a]">{c.text}</p>
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function Hero() {
               </div>
               <div>
                 <p className="text-xs font-black text-[#1a1a1a]">{s.value}</p>
-                <p className="text-[9px] text-[#aaa] leading-none">{s.sub}</p>
+                <p className="text-[10px] text-[#707070] leading-none">{s.sub}</p>
               </div>
             </div>
           ))}

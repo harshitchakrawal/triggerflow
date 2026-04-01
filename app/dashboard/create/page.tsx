@@ -75,17 +75,25 @@ export default function CreateAutomation() {
   };
 
   return (
-    <section
-      className="dot-grid relative min-h-screen overflow-hidden px-4 py-10 sm:px-6 lg:px-8"
-      style={{
-        background: "radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255,255,255,0.7) 0%, transparent 100%), linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%)"
-      }}
-    >
+    <section className="relative min-h-screen overflow-hidden px-4 py-10 sm:px-6 lg:px-8">
+      {/* 1. Base Gradient */}
+      <div className="pointer-events-none absolute inset-0 bg-[#f8f9fb]" style={{
+        background: "linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%)"
+      }} />
+      
+      {/* 2. Dotted Grid Overlay */}
+      <div className="dot-grid pointer-events-none absolute inset-0" />
+
+      {/* 3. Soft radial center glow */}
+      <div className="pointer-events-none absolute inset-0" style={{
+        background: "radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255,255,255,0.8) 0%, transparent 100%)"
+      }} />
+      
       <div className="relative z-10 mx-auto w-full max-w-4xl pt-8">
         {/* Navigation */}
         <Link 
           href="/dashboard" 
-          className="inline-flex items-center gap-2 text-[#aaa] hover:text-[#f05a28] transition-all mb-8 group"
+          className="inline-flex items-center gap-2 text-[#707070] hover:text-[#f05a28] transition-all mb-8 group"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform">
             <path d="m15 18-6-6 6-6" />
@@ -96,7 +104,6 @@ export default function CreateAutomation() {
         {/* Title Section */}
         <div className="mb-12">
           <h1 className="text-3xl font-black text-[#1a1a1a] tracking-tight mb-4">Create automation</h1>
-          <div className="h-1.5 w-48 bg-[#f05a28] rounded-full shadow-[0_4px_15px_rgba(240,90,40,0.3)]" />
         </div>
 
         <div className="space-y-16 pb-20">
@@ -104,14 +111,14 @@ export default function CreateAutomation() {
           <section className="space-y-6">
             <div className="px-1">
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Reel details</h2>
-              <p className="text-[#aaa] text-xs font-bold uppercase tracking-widest">
+              <p className="text-[#707070] text-xs font-bold uppercase tracking-widest">
                 Paste your Instagram reel link — we extract the media ID automatically
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/80 border border-black/[0.07] rounded-2xl p-6 backdrop-blur-md shadow-sm space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">Reel URL</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-[#707070]">Reel URL</label>
                 <input 
                   className="w-full bg-transparent border-b border-black/[0.05] pb-2 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28] transition-all placeholder:text-[#ccc]"
                   value={reelUrl}
@@ -121,12 +128,12 @@ export default function CreateAutomation() {
               </div>
 
               <div className="bg-white/80 border border-black/[0.07] rounded-2xl p-6 backdrop-blur-md shadow-sm space-y-3 opacity-90 transition-opacity">
-                <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">Media ID</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-[#707070]">Media ID</label>
                 <div className="text-sm font-black text-[#1a1a1a]/40 italic truncate">
                   {mediaId || "Auto-extracted from URL"}
                 </div>
                 <div className="h-[1px] bg-black/[0.05]" />
-                <p className="text-[10px] text-[#aaa] font-medium leading-tight italic">This is what Instagram uses to identify your reel</p>
+                <p className="text-[10px] text-[#707070] font-medium leading-tight italic">This is what Instagram uses to identify your reel</p>
               </div>
             </div>
           </section>
@@ -135,13 +142,13 @@ export default function CreateAutomation() {
           <section className="space-y-6">
             <div className="px-1">
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Trigger keywords</h2>
-              <p className="text-[#aaa] text-xs font-bold uppercase tracking-widest">
+              <p className="text-[#707070] text-xs font-bold uppercase tracking-widest">
                 Anyone who comments these words will receive your automated reply
               </p>
             </div>
 
             <div className="bg-white/80 border border-black/[0.07] rounded-3xl p-8 backdrop-blur-md shadow-sm max-w-2xl">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa] mb-4 block">Keywords</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#707070] mb-4 block">Keywords</label>
               <div className="flex flex-wrap gap-2 items-center">
                 {keywords.map((kw) => (
                   <span key={kw} className="inline-flex items-center gap-2 bg-[#f05a28]/10 border border-[#f05a28]/20 px-3 py-1.5 rounded-xl text-xs font-black text-[#f05a28] animate-in zoom-in-95">
@@ -163,7 +170,7 @@ export default function CreateAutomation() {
                 />
               </div>
               <div className="h-[1px] bg-black/[0.05] mt-4 mb-3" />
-              <p className="text-[10px] text-[#aaa] font-bold italic opacity-60">
+              <p className="text-[10px] text-[#707070] font-bold italic opacity-60">
                 Press Enter to add each keyword. Case insensitive.
               </p>
             </div>
@@ -173,7 +180,7 @@ export default function CreateAutomation() {
           <section className="space-y-6">
             <div className="px-1">
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Reply messages</h2>
-              <p className="text-[#aaa] text-xs font-bold uppercase tracking-widest">
+              <p className="text-[#707070] text-xs font-bold uppercase tracking-widest">
                 What to send when someone comments a trigger keyword
               </p>
             </div>
@@ -181,7 +188,7 @@ export default function CreateAutomation() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="bg-white/80 border border-black/[0.07] rounded-3xl p-8 backdrop-blur-md shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">Comment reply</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#707070]">Comment reply</label>
                   <span className="text-[9px] font-black text-[#f05a28] px-2 py-1 rounded-full bg-[#f05a28]/10 border border-[#f05a28]/20 uppercase tracking-widest">
                     always works
                   </span>
@@ -199,8 +206,8 @@ export default function CreateAutomation() {
 
               <div className="bg-white/80 border border-black/[0.07] rounded-3xl p-8 backdrop-blur-md shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#aaa]">DM message</label>
-                  <span className="text-[9px] font-black text-[#aaa] px-2 py-1 rounded-full bg-black/[0.05] border border-black/[0.05] uppercase tracking-widest font-mono">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#707070]">DM message</label>
+                  <span className="text-[9px] font-black text-[#707070] px-2 py-1 rounded-full bg-black/[0.05] border border-black/[0.05] uppercase tracking-widest font-mono">
                     requires approval
                   </span>
                 </div>
@@ -216,7 +223,7 @@ export default function CreateAutomation() {
 
           {/* Action Footer */}
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-black/[0.05]">
-            <div className="flex items-center gap-3 text-[#aaa]">
+            <div className="flex items-center gap-3 text-[#707070]">
               <div className="w-1.5 h-1.5 rounded-full bg-[#f05a28] animate-pulse" />
               <p className="text-[11px] font-bold tracking-tight">Active immediately after saving.</p>
             </div>

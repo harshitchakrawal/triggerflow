@@ -35,7 +35,7 @@ const SidebarItem = ({
 
 const SidebarSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mb-8">
-    <h3 className="px-3 text-[10px] font-bold uppercase tracking-widest text-[#aaa] mb-4">
+    <h3 className="px-3 text-[10px] font-bold uppercase tracking-widest text-[#707070] mb-4">
       {title}
     </h3>
     <div className="flex flex-col gap-1">
@@ -147,7 +147,7 @@ const DashboardSidebar = () => {
           <span className="text-xl font-black text-[#1a1a1a] tracking-tight leading-none mb-1">
             Triggerflow
           </span>
-          <span className="text-xs text-[#aaa] font-medium tracking-wide">
+          <span className="text-xs text-[#707070] font-medium tracking-wide">
             Instagram automation
           </span>
         </Link>
@@ -180,7 +180,7 @@ const DashboardSidebar = () => {
             <span className="text-sm font-bold text-[#1a1a1a] truncate group-hover:text-[#f05a28] transition-colors">
               triggerflow123
             </span>
-            <span className="text-[10px] text-[#aaa] font-medium">Free plan</span>
+            <span className="text-[10px] text-[#707070] font-medium">Free plan</span>
           </div>
         </div>
       </div>

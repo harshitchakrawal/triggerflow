@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { connectDB } from "@/lib/mongodb";
-import { AutomationRule } from "@/models/AutomationRule";
-import { ProcessedComment } from "@/models/ProcessedComment";
+import { connectDB } from "@/app/lib/mongodb";
+import { AutomationRule } from "@/app/models/AutomationRule";
+import { ProcessedComment } from "@/app/models/ProcessedComment";
 
 const VERIFY_TOKEN = "triggerflow123";
 const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN!;
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       const rule = await AutomationRule.findOne({
         mediaId,
         isActive: true,
-        keyword: { $regex: new RegExp(commentText, "i") }
+        keyword: { $regex: new RegExp(`^${commentText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, "i") }
       });
 
       if (!rule) {

@@ -7,7 +7,7 @@ const VERIFY_TOKEN = "triggerflow123";
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN!;
 const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN!;
 
-// GET — webhook verification
+// GET - webhook verification
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const mode      = searchParams.get("hub.mode");
@@ -20,7 +20,7 @@ export async function GET(req: Request) {
   return new Response("Verification failed", { status: 403 });
 }
 
-// POST — receive and process webhook events
+// POST - receive and process webhook events
 export async function POST(req: Request) {
   const body = await req.json();
   console.log("Webhook received:", JSON.stringify(body, null, 2));
@@ -45,20 +45,20 @@ export async function POST(req: Request) {
 
       if (!mediaId || !commentText || !commenterId || !commentId) continue;
 
-      // Step 1 — find active rule for this reel in MongoDB
+      // Step 1 - find active rule for this reel in MongoDB
       const rule = await AutomationRule.findOne({ mediaId, isActive: true });
       if (!rule) {
         console.log("No active rule found for media:", mediaId);
         continue;
       }
 
-      // Step 2 — check if comment contains the trigger keyword
+      // Step 2 - check if comment contains the trigger keyword
       if (!commentText.includes(rule.keyword.toLowerCase())) {
         console.log("Keyword not matched. Expected:", rule.keyword);
         continue;
       }
 
-      // Step 3 — deduplication check using ProcessedComment
+      // Step 3 - deduplication check using ProcessedComment
       const dedupKey = `${commenterId}:${mediaId}`;
       const already = await ProcessedComment.findOne({ dedupKey });
       if (already) {
@@ -66,13 +66,13 @@ export async function POST(req: Request) {
         continue;
       }
 
-      // Step 4 — send public comment reply (always works)
+      // Step 4 - send public comment reply (always works)
       const commentSuccess = await replyToComment(commentId, rule.message);
 
-      // Step 5 — attempt Instagram DM (works once Meta approves you)
+      // Step 5 - attempt Instagram DM (works once Meta approves you)
       const dmSuccess = await sendInstagramDM(commenterId, rule.message);
 
-      // Step 6 — save to ProcessedComment if either succeeded
+      // Step 6 - save to ProcessedComment if either succeeded
       if (commentSuccess || dmSuccess) {
         await ProcessedComment.create({ dedupKey, ruleId: rule._id });
         console.log(`   Comment reply: ${commentSuccess ? "OK" : "FAILED"}`);
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
   return new Response("EVENT_RECEIVED", { status: 200 });
 }
 
-// Comment reply — works immediately, no approval needed
+// Comment reply - works immediately, no approval needed
 async function replyToComment(
   commentId: string,
   message: string
@@ -103,7 +103,7 @@ async function replyToComment(
   }
 }
 
-// Instagram DM — requires Meta approval, fails silently until then
+// Instagram DM - requires Meta approval, fails silently until then
 async function sendInstagramDM(
   userId: string,
   message: string

@@ -45,7 +45,7 @@ const ReelCard = ({
     <div className="flex-1 min-w-0">
       <h4 className="text-sm font-bold text-[#1a1a1a] truncate mb-1">{title}</h4>
       <p className="text-[11px] text-[#707070] font-medium leading-tight">
-        Keyword: <span className="text-[#5c5c5c]">"{keyword}"</span> | {triggers} triggers
+        Keyword: <span className="text-[#5c5c5c]">"{keyword}"</span> • {triggers} triggers
       </p>
     </div>
     <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${status === "Active" ? "bg-[#f05a28]/10 text-[#f05a28]" : "bg-black/[0.05] text-[#707070]"}`}>
@@ -71,7 +71,7 @@ const ActivityItem = ({
     <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${color}`} />
     <div className="flex-1 min-w-0">
       <p className="text-xs text-[#5c5c5c] leading-snug">
-        <span className="font-bold text-[#1a1a1a]">@{user}</span> {action} | <span className="text-[#707070] italic">{status}</span>
+        <span className="font-bold text-[#1a1a1a]">@{user}</span> {action} • <span className="text-[#707070] italic">{status}</span>
       </p>
     </div>
     <span className="text-[10px] text-[#707070] font-medium whitespace-nowrap">{time}</span>
@@ -85,7 +85,7 @@ export default function Dashboard() {
       <div className="pointer-events-none absolute inset-0 bg-[#f8f9fb]" style={{
         background: "linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%)"
       }} />
-      
+
       {/* 2. Dotted Grid Overlay */}
       <div className="dot-grid pointer-events-none absolute inset-0" />
 
@@ -93,7 +93,7 @@ export default function Dashboard() {
       <div className="pointer-events-none absolute inset-0" style={{
         background: "radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255,255,255,0.8) 0%, transparent 100%)"
       }} />
-      
+
       <div className="relative z-10 mx-auto w-full max-w-7xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <h1 className="text-2xl font-black text-[#1a1a1a] tracking-tight">My automations</h1>
@@ -118,8 +118,8 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          <StatCard label="Active automations" value="3" subValue="+ 1 this week" />
-          <StatCard label="Triggers today" value="47" subValue="+ 12 vs yesterday" />
+          <StatCard label="Active automations" value="3" subValue="↑ 1 this week" />
+          <StatCard label="Triggers today" value="47" subValue="↑ 12 vs yesterday" />
           <StatCard label="Replies sent" value="41" subValue="87% success rate" />
           <StatCard label="Total all time" value="234" subValue="Since Mar 1" subColor="text-[#707070]" />
         </div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
           <div className="lg:col-span-5">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-black text-[#1a1a1a] uppercase tracking-widest opacity-70">Active reels</h3>
-              <button className="text-[10px] font-bold text-[#707070] hover:text-[#f05a28] transition-colors">See all {"->"}</button>
+              <button className="text-[10px] font-bold text-[#707070] hover:text-[#f05a28] transition-colors">See all →</button>
             </div>
             <div className="space-y-3">
               <ReelCard title="Free roadmap reel" keyword="roadmap" triggers={23} />
@@ -140,7 +140,7 @@ export default function Dashboard() {
           <div className="lg:col-span-7 bg-white/80 border border-black/[0.07] rounded-3xl p-6 backdrop-blur-sm shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-black text-[#1a1a1a] uppercase tracking-widest opacity-70">Recent activity</h3>
-              <button className="text-[10px] font-bold text-[#707070] hover:text-[#f05a28] transition-colors">See all {"->"}</button>
+              <button className="text-[10px] font-bold text-[#707070] hover:text-[#f05a28] transition-colors">See all →</button>
             </div>
             <div className="flex flex-col">
               <ActivityItem user="user123" action="commented 'roadmap'" status="reply sent" time="2m ago" />

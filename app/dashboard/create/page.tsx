@@ -19,7 +19,7 @@ export default function CreateAutomation() {
     const match = url.match(/reel\/([A-Za-z0-9_-]+)/);
     return match ? match[1] : "";
   };
-  
+
   const mediaId = extractMediaId(reelUrl);
 
   const handleSave = async () => {
@@ -31,17 +31,17 @@ export default function CreateAutomation() {
       alert("Please add at least one keyword");
       return;
     }
-    
+
     setLoading(true);
     try {
       const res = await fetch("/api/rules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          mediaId, 
-          keyword: keywords.join(","), 
-          commentMsg, 
-          dmMsg 
+        body: JSON.stringify({
+          mediaId,
+          keyword: keywords.join(","),
+          commentMsg,
+          dmMsg
         }),
       });
 
@@ -80,7 +80,7 @@ export default function CreateAutomation() {
       <div className="pointer-events-none absolute inset-0 bg-[#f8f9fb]" style={{
         background: "linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%)"
       }} />
-      
+
       {/* 2. Dotted Grid Overlay */}
       <div className="dot-grid pointer-events-none absolute inset-0" />
 
@@ -88,11 +88,11 @@ export default function CreateAutomation() {
       <div className="pointer-events-none absolute inset-0" style={{
         background: "radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255,255,255,0.8) 0%, transparent 100%)"
       }} />
-      
+
       <div className="relative z-10 mx-auto w-full max-w-4xl pt-8">
         {/* Navigation */}
-        <Link 
-          href="/dashboard" 
+        <Link
+          href="/dashboard"
           className="inline-flex items-center gap-2 text-[#707070] hover:text-[#f05a28] transition-all mb-8 group"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform">
@@ -100,7 +100,7 @@ export default function CreateAutomation() {
           </svg>
           <span className="text-[10px] font-black uppercase tracking-widest">Back to Dashboard</span>
         </Link>
-        
+
         {/* Title Section */}
         <div className="mb-12">
           <h1 className="text-3xl font-black text-[#1a1a1a] tracking-tight mb-4">Create automation</h1>
@@ -112,14 +112,14 @@ export default function CreateAutomation() {
             <div className="px-1">
               <h2 className="text-xl font-black text-[#1a1a1a] mb-1">Reel details</h2>
               <p className="text-[#707070] text-xs font-bold uppercase tracking-widest">
-                Paste your Instagram reel link - we extract the media ID automatically
+                Paste your Instagram reel link — we extract the media ID automatically
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/80 border border-black/[0.07] rounded-2xl p-6 backdrop-blur-md shadow-sm space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[#707070]">Reel URL</label>
-                <input 
+                <input
                   className="w-full bg-transparent border-b border-black/[0.05] pb-2 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28] transition-all placeholder:text-[#ccc]"
                   value={reelUrl}
                   onChange={(e) => setReelUrl(e.target.value)}
@@ -161,7 +161,7 @@ export default function CreateAutomation() {
                     </button>
                   </span>
                 ))}
-                <input 
+                <input
                   className="bg-transparent border-none outline-none text-sm font-bold text-[#1a1a1a] min-w-[150px] px-2 py-1"
                   placeholder={keywords.length === 0 ? "Type and press Enter..." : "Add keyword..."}
                   value={newKeyword}
@@ -193,7 +193,7 @@ export default function CreateAutomation() {
                     always works
                   </span>
                 </div>
-                <textarea 
+                <textarea
                   className="w-full bg-black/[0.02] border border-black/[0.05] rounded-xl px-4 py-3 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28]/40 transition-all resize-none min-h-[100px]"
                   value={commentMsg}
                   onChange={(e) => setCommentMsg(e.target.value.slice(0, 200))}
@@ -211,7 +211,7 @@ export default function CreateAutomation() {
                     requires approval
                   </span>
                 </div>
-                <textarea 
+                <textarea
                   className="w-full bg-black/[0.02] border border-black/[0.05] rounded-xl px-4 py-3 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28]/40 transition-all resize-none min-h-[100px]"
                   value={dmMsg}
                   onChange={(e) => setDmMsg(e.target.value)}
@@ -227,8 +227,8 @@ export default function CreateAutomation() {
               <div className="w-1.5 h-1.5 rounded-full bg-[#f05a28] animate-pulse" />
               <p className="text-[11px] font-bold tracking-tight">Active immediately after saving.</p>
             </div>
-            
-            <button 
+
+            <button
               onClick={handleSave}
               disabled={loading || saved}
               className="text-white font-black text-sm px-10 py-4 rounded-xl hover:-translate-y-0.5 transition-all active:translate-y-0 shadow-md flex items-center gap-3 disabled:opacity-50 disabled:translate-y-0"

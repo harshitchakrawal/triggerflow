@@ -10,8 +10,8 @@ const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN!;
 // GET - webhook verification
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const mode      = searchParams.get("hub.mode");
-  const token     = searchParams.get("hub.verify_token");
+  const mode = searchParams.get("hub.mode");
+  const token = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
   if (mode === "subscribe" && token === VERIFY_TOKEN) {
@@ -35,11 +35,11 @@ export async function POST(req: Request) {
     for (const change of entry.changes ?? []) {
       if (change.field !== "comments") continue;
 
-      const comment     = change.value;
-      const mediaId     = comment.media?.id;
+      const comment = change.value;
+      const mediaId = comment.media?.id;
       const commentText = comment.text?.toLowerCase().trim();
       const commenterId = comment.from?.id;
-      const commentId   = comment.id;
+      const commentId = comment.id;
 
       console.log("Comment detected:", { mediaId, commentText, commenterId });
 
@@ -67,10 +67,10 @@ export async function POST(req: Request) {
       }
 
       // Step 4 - send public comment reply (always works)
-      const commentSuccess = await replyToComment(commentId, rule.message);
+      const commentSuccess = await replyToComment(commentId, rule.replyToComment);
 
       // Step 5 - attempt Instagram DM (works once Meta approves you)
-      const dmSuccess = await sendInstagramDM(commenterId, rule.message);
+      const dmSuccess = await sendInstagramDM(commenterId, rule.replyToDM);
 
       // Step 6 - save to ProcessedComment if either succeeded
       if (commentSuccess || dmSuccess) {

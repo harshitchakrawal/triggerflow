@@ -1,28 +1,44 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+interface InstagramMedia {
+  id: string;
+  shortcode: string;
+  permalink: string;
+}
+
+interface InstagramApiResponse {
+  data: InstagramMedia[];
+  paging?: {
+    next?: string;
+  };
+  error?: {
+    message: string;
+  };
+}
 
 // ─── Step 1 ───────────────────────────────────────────────
-function extractShortcode(url) {
+function extractShortcode(url: string): string {
   const match = url.match(/instagram\.com\/(?:reel|p|tv)\/([A-Za-z0-9_-]+)/);
   if (!match) throw new Error('Invalid Instagram URL format');
   return match[1];
 }
 
 // ─── Step 2 ───────────────────────────────────────────────
-async function fetchAllMedia(accountId, accessToken) {
-  const media = [];
-  let endpoint =
-    `https://graph.instagram.com/v19.0/${accountId}/media` +
+async function fetchAllMedia(accountId: string, accessToken: string): Promise<InstagramMedia[]> {
+  const media: InstagramMedia[] = [];
+  let endpoint: string | null =
+    `https://graph.facebook.com/v19.0/${accountId}/media` +
     `?fields=id,shortcode,permalink&limit=100&access_token=${accessToken}`;
 
   while (endpoint) {
     const res = await fetch(endpoint, { cache: 'no-store' });
 
     if (!res.ok) {
-      const err = await res.json();
+      const err: InstagramApiResponse = await res.json();
       throw new Error(`Instagram API error: ${err.error?.message ?? res.statusText}`);
     }
 
-    const data = await res.json();
+    const data: InstagramApiResponse = await res.json();
     media.push(...(data.data ?? []));
     endpoint = data.paging?.next ?? null;
   }
@@ -31,9 +47,9 @@ async function fetchAllMedia(accountId, accessToken) {
 }
 
 // ─── Handler ──────────────────────────────────────────────
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
-  const { url } = body;
+  const { url } = body as { url?: string };
 
   if (!url) {
     return NextResponse.json(
@@ -43,15 +59,16 @@ export async function POST(request) {
   }
 
   // Step 1 — Extract shortcode
-  let shortcode;
+  let shortcode: string;
   try {
     shortcode = extractShortcode(url);
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    const message = err instanceof Error ? err.message : 'Failed to parse URL';
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 
   const accountId   = process.env.INSTAGRAM_ACCOUNT_ID;
-  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
+  const accessToken = process.env.PAGE_ACCESS_TOKEN;
 
   if (!accountId || !accessToken) {
     return NextResponse.json(
@@ -65,6 +82,8 @@ export async function POST(request) {
     const mediaList = await fetchAllMedia(accountId, accessToken);
 
     // Step 3 — Match shortcode
+    console.log("Total media found:", mediaList.length);
+    console.log("Shortcodes:", mediaList.map(m => m.shortcode));
     const match = mediaList.find((item) => item.shortcode === shortcode);
 
     // Step 4 — Return result
@@ -83,6 +102,7 @@ export async function POST(request) {
     });
 
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 502 });
+    const message = err instanceof Error ? err.message : 'Unexpected error';
+    return NextResponse.json({ success: false, error: message }, { status: 502 });
   }
 }

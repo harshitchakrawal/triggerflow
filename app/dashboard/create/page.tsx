@@ -10,10 +10,10 @@ export default function CreateAutomation() {
   const [reelUrl, setReelUrl] = useState("");
   const [keywords, setKeywords] = useState<string[]>(["link"]);
   const [newKeyword, setNewKeyword] = useState("");
-  const [commentMsg, setCommentMsg] = useState(
+  const [replyToComment, setreplyToComment] = useState(
     "Hey! I just sent you the link in DMs — check your inbox!"
   );
-  const [dmMsg, setDmMsg] = useState(
+  const [replyToDm, setreplyToDm] = useState(
     "Here's the resource you asked for: https://yourlink.com"
   );
   const [saved, setSaved] = useState(false);
@@ -67,8 +67,8 @@ export default function CreateAutomation() {
         body: JSON.stringify({
           mediaId,
           keyword: keywords.join(","),
-          commentMsg,
-          dmMsg
+          replyToComment,
+          replyToDm
         }),
       });
 
@@ -222,12 +222,12 @@ export default function CreateAutomation() {
                 </div>
                 <textarea
                   className="w-full bg-black/[0.02] border border-black/[0.05] rounded-xl px-4 py-3 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28]/40 transition-all resize-none min-h-[100px]"
-                  value={commentMsg}
-                  onChange={(e) => setCommentMsg(e.target.value.slice(0, 200))}
+                  value={replyToComment}
+                  onChange={(e) => setreplyToComment(e.target.value.slice(0, 200))}
                   placeholder="Enter your comment reply..."
                 />
                 <div className="text-[10px] font-black font-mono text-[#ccc] text-right">
-                  {commentMsg.length} / 200
+                  {replyToComment.length} / 200
                 </div>
               </div>
 
@@ -240,8 +240,8 @@ export default function CreateAutomation() {
                 </div>
                 <textarea
                   className="w-full bg-black/[0.02] border border-black/[0.05] rounded-xl px-4 py-3 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28]/40 transition-all resize-none min-h-[100px]"
-                  value={dmMsg}
-                  onChange={(e) => setDmMsg(e.target.value)}
+                  value={replyToDm}
+                  onChange={(e) => setreplyToDm(e.target.value)}
                   placeholder="Enter your DM message..."
                 />
               </div>

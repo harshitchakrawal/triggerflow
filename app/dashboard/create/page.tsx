@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 export default function CreateAutomation() {
+  const [mediaId, setMediaId] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState("");
+
   const [reelUrl, setReelUrl] = useState("");
   const [keywords, setKeywords] = useState<string[]>(["link"]);
   const [newKeyword, setNewKeyword] = useState("");
@@ -15,12 +19,35 @@ export default function CreateAutomation() {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const extractMediaId = (url: string) => {
-    const match = url.match(/reel\/([A-Za-z0-9_-]+)/);
-    return match ? match[1] : "";
-  };
+  const handleUrlChange = async (url: string) => {
+    setReelUrl(url);
+    setMediaId("");
+    setVerifyError("");
 
-  const mediaId = extractMediaId(reelUrl);
+    const match = url.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    if (!match) return;
+
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/media/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMediaId(data.mediaId);
+        setVerifyError("");
+      } else {
+        setVerifyError(data.error);
+        setMediaId("");
+      }
+    } catch {
+      setVerifyError("Failed to verify URL");
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!mediaId) {
@@ -122,7 +149,7 @@ export default function CreateAutomation() {
                 <input
                   className="w-full bg-transparent border-b border-black/[0.05] pb-2 text-sm font-bold text-[#1a1a1a] focus:outline-none focus:border-[#f05a28] transition-all placeholder:text-[#ccc]"
                   value={reelUrl}
-                  onChange={(e) => setReelUrl(e.target.value)}
+                  onChange={(e) => handleUrlChange(e.target.value)}
                   placeholder="https://www.instagram.com/reel/ABC123..."
                 />
               </div>
@@ -133,7 +160,7 @@ export default function CreateAutomation() {
                   {mediaId || "Auto-extracted from URL"}
                 </div>
                 <div className="h-[1px] bg-black/[0.05]" />
-                <p className="text-[10px] text-[#707070] font-medium leading-tight italic">This is what Instagram uses to identify your reel</p>
+                <p className="text-[10px] text-black font-medium leading-tight italic">This is what Instagram uses to identify your reel</p>
               </div>
             </div>
           </section>
